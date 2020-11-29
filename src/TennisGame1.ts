@@ -1,5 +1,9 @@
-import { TennisGame } from './TennisGame';
-
+import { TennisGame } from "./TennisGame";
+import {
+  MINUS_RESULT_LIST,
+  SCORE_LIST,
+  TEMP_SCORE_LIST,
+} from "./TennisGame.constant";
 
 export class TennisGame1 implements TennisGame {
   private m_score1: number = 0;
@@ -13,57 +17,33 @@ export class TennisGame1 implements TennisGame {
   }
 
   wonPoint(playerName: string): void {
-    if (playerName === 'player1')
-      this.m_score1 += 1;
-    else
-      this.m_score2 += 1;
+    if (playerName === "player1") this.m_score1 += 1;
+    else this.m_score2 += 1;
   }
 
   getScore(): string {
-    let score: string = '';
+    let score: string = "";
     let tempScore: number = 0;
-    if (this.m_score1 === this.m_score2) {
-      switch (this.m_score1) {
-        case 0:
-          score = 'Love-All';
-          break;
-        case 1:
-          score = 'Fifteen-All';
-          break;
-        case 2:
-          score = 'Thirty-All';
-          break;
-        default:
-          score = 'Deuce';
-          break;
 
-      }
-    }
-    else if (this.m_score1 >= 4 || this.m_score2 >= 4) {
+    const scoreValue: string[] = ["Love-All", "Fifteen-All", "Thirty-All"];
+
+    if (this.m_score1 === this.m_score2) {
+      score = scoreValue[this.m_score1] || "Deuce";
+    } else if (this.m_score1 >= 4 || this.m_score2 >= 4) {
       const minusResult: number = this.m_score1 - this.m_score2;
-      if (minusResult === 1) score = 'Advantage player1';
-      else if (minusResult === -1) score = 'Advantage player2';
-      else if (minusResult >= 2) score = 'Win for player1';
-      else score = 'Win for player2';
-    }
-    else {
+
+      if (minusResult > 1) {
+        score = MINUS_RESULT_LIST["2"];
+      } else {
+        score = MINUS_RESULT_LIST[minusResult] || MINUS_RESULT_LIST["default"];
+      }
+    } else {
       for (let i = 1; i < 3; i++) {
-        if (i === 1) tempScore = this.m_score1;
-        else { score += '-'; tempScore = this.m_score2; }
-        switch (tempScore) {
-          case 0:
-            score += 'Love';
-            break;
-          case 1:
-            score += 'Fifteen';
-            break;
-          case 2:
-            score += 'Thirty';
-            break;
-          case 3:
-            score += 'Forty';
-            break;
-        }
+        i === 1
+          ? (tempScore = this.m_score1)
+          : ((score += "-"), (tempScore = this.m_score2));
+
+        score += TEMP_SCORE_LIST[tempScore];
       }
     }
     return score;
